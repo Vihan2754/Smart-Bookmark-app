@@ -69,6 +69,20 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 	 - Site URL: `http://localhost:3000`
 	 - Redirect URL: `http://localhost:3000/auth/callback`
 
+## Privacy Guarantee (Important)
+
+Bookmarks are private per user. One user must never see another user bookmarks.
+
+If you see cross-user data, run `supabase/privacy_rls_fix.sql` in Supabase SQL Editor.
+
+Then verify:
+
+1. Login with Google account A and add bookmark A.
+2. Login with Google account B in another browser/incognito.
+3. Account B must not see bookmark A.
+
+Also ensure `NEXT_PUBLIC_SUPABASE_ANON_KEY` is a publishable/anon key, not a service-role key.
+
 ## Google OAuth Setup Steps
 
 1. Open Google Cloud Console.

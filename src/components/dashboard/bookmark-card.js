@@ -1,4 +1,17 @@
+const createdAtFormatter = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: true,
+  timeZone: "UTC",
+});
+
 export function BookmarkCard({ bookmark, onDelete }) {
+  const createdAtText = createdAtFormatter.format(new Date(bookmark.created_at));
+
   return (
     <article className="glass rounded-2xl p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-xl">
       <div className="flex items-start justify-between gap-4">
@@ -24,7 +37,7 @@ export function BookmarkCard({ bookmark, onDelete }) {
       </div>
 
       <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
-        Added {new Date(bookmark.created_at).toLocaleString()}
+        Added {createdAtText} UTC
       </p>
     </article>
   );

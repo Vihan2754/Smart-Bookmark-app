@@ -10,24 +10,32 @@ create table if not exists public.bookmarks (
   created_at timestamptz not null default now()
 );
 
+grant usage on schema public to anon, authenticated;
+grant select, insert, delete on public.bookmarks to authenticated;
+revoke all on public.bookmarks from anon;
+
 alter table public.bookmarks enable row level security;
+alter table public.bookmarks force row level security;
 
 -- Users can read only their own bookmarks.
 create policy "Users can select own bookmarks"
 on public.bookmarks
 for select
+to authenticated
 using (auth.uid() = user_id);
 
 -- Users can insert only rows that belong to themselves.
 create policy "Users can insert own bookmarks"
 on public.bookmarks
 for insert
+to authenticated
 with check (auth.uid() = user_id);
 
 -- Users can delete only their own bookmarks.
 create policy "Users can delete own bookmarks"
 on public.bookmarks
 for delete
+to authenticated
 using (auth.uid() = user_id);
 
 -- Optional but useful for faster dashboard loads.
