@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
@@ -23,7 +23,7 @@ export default function DashboardClient() {
   const [bookmarkToDelete, setBookmarkToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  async function loadBookmarks(activeUser) {
+  const loadBookmarks = useCallback(async (activeUser) => {
     const { data, error } = await supabase
       .from("bookmarks")
       .select("id, title, url, created_at")
@@ -36,7 +36,7 @@ export default function DashboardClient() {
     }
 
     setBookmarks(data || []);
-  }
+  }, [supabase]);
 
   useEffect(() => {
     let mounted = true;
@@ -65,7 +65,7 @@ export default function DashboardClient() {
     return () => {
       mounted = false;
     };
-  }, [router, supabase]);
+  }, [loadBookmarks, router, supabase]);
 
   useEffect(() => {
     if (!user) return;
@@ -80,14 +80,16 @@ export default function DashboardClient() {
           table: "bookmarks",
           filter: `user_id=eq.${user.id}`,
         },
-        () => loadBookmarks(user),
+        () => {
+          loadBookmarks(user);
+        },
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, user]);
+  }, [loadBookmarks, supabase, user]);
 
   async function handleAddBookmark({ title, url }) {
     if (!user) return;
@@ -122,6 +124,7 @@ export default function DashboardClient() {
     }
 
     setIsAddModalOpen(false);
+    await loadBookmarks(user);
     toast.success("Bookmark saved.");
   }
 
@@ -143,7 +146,9 @@ export default function DashboardClient() {
       return;
     }
 
+    setBookmarks((previous) => previous.filter((bookmark) => bookmark.id !== bookmarkToDelete.id));
     setBookmarkToDelete(null);
+    await loadBookmarks(user);
     toast.success("Bookmark deleted.");
   }
 
