@@ -110,7 +110,7 @@ For clean production builds:
 npm run build:clean
 ```
 
-Open `http://localhost:3000` (or `http://localhost:3001` if 3000 is busy).
+Open `http://localhost:3000` .
 
 ## Realtime Logic
 
@@ -139,44 +139,3 @@ It listens to Postgres changes on `public.bookmarks` filtered by current `user_i
 - RLS policies enforce privacy at database level.
 - Client can only access data allowed by authenticated user policies.
 
-## Troubleshooting
-
-### 1) `__webpack_modules__[moduleId] is not a function` or hydration crashes
-
-Cause: stale `.next` / hot-update cache.
-
-Fix:
-
-```bash
-npm run dev:clean
-```
-
-Then hard refresh browser (`Ctrl+Shift+R`).
-
-### 2) `ENOENT ... .next/static/.../_ssgManifest.js` during build
-
-Cause: interrupted/corrupted build cache.
-
-Fix:
-
-```bash
-npm run build:clean
-```
-
-### 3) `Cannot find module ... next/dist/server/lib/start-server.js`
-
-Cause: dependency installation mismatch after restart/reload.
-
-Fix:
-
-```bash
-rm -rf node_modules package-lock.json
-npm install
-npm run dev:clean
-```
-
-### 4) `403 Forbidden` on `POST /rest/v1/bookmarks`
-
-Cause: Supabase RLS policy/grant issue.
-
-Fix: run `supabase/privacy_rls_fix.sql` in Supabase SQL Editor.
